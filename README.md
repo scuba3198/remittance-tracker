@@ -12,7 +12,8 @@ A beautiful, mobile-first web application to track money sent from the UK to Nep
 - **💱 Live Exchange Rates**: Automatically fetches the latest GBP to NPR exchange rates (with manual override).
 - **🌗 Dark Mode**: Beautifully designed interface with automatic light/dark theme switching.
 - **📱 Mobile First**: Optimized for seamless use on your phone.
-- [x] Data Portability: Export your transaction history to JSON and import it on any device.
+- **🛡️ Automated Quality Gate**: Enforces zero-warning strictness for formatting, linting, and types (Rule 13).
+- **📦 Data Portability**: Export your transaction history to JSON and import it on any device.
 
 ## 🏗️ Architecture Data Flow
 
@@ -43,10 +44,11 @@ sequenceDiagram
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) + CSS Variables for Theming
 - **Database**: [Dexie.js](https://dexie.org/) (IndexedDB Wrapper)
-- **Validation**: [Zod](https://zod.dev/) (Domain-Driven Design)
+- **Validation**: [Zod](https://zod.dev/) (Form Validation & Boundary Safety)
+- **Linter/Formatter**: [Biome](https://biomejs.dev/) (Unified Quality Gate)
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ## 🚀 Getting Started
