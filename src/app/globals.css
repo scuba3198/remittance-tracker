@@ -1,67 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Mode */
-  --background: 255 255 255; /* White */
-  --foreground: 15 23 42; /* Slate 900 */
-  
-  --card: 255 255 255;
-  --card-foreground: 15 23 42;
-  
-  --popover: 255 255 255;
-  --popover-foreground: 15 23 42;
-  
-  --primary: 79 70 229; /* Indigo 600 */
-  --primary-foreground: 255 255 255;
-  
-  --secondary: 241 245 249; /* Slate 100 */
-  --secondary-foreground: 15 23 42;
-  
-  --muted: 241 245 249;
-  --muted-foreground: 100 116 139; /* Slate 500 */
-  
-  --accent: 241 245 249;
-  --accent-foreground: 15 23 42;
-  
-  --destructive: 239 68 68; /* Red 500 */
-  --destructive-foreground: 248 250 252;
+	/* Light Mode */
+	--background: 255 255 255; /* White */
+	--foreground: 15 23 42; /* Slate 900 */
 
-  --border: 226 232 240; /* Slate 200 */
-  --input: 226 232 240;
-  --ring: 79 70 229;
-  
-  --radius: 0.75rem;
+	--card: 255 255 255;
+	--card-foreground: 15 23 42;
+
+	--popover: 255 255 255;
+	--popover-foreground: 15 23 42;
+
+	--primary: 79 70 229; /* Indigo 600 */
+	--primary-foreground: 255 255 255;
+
+	--secondary: 241 245 249; /* Slate 100 */
+	--secondary-foreground: 15 23 42;
+
+	--muted: 241 245 249;
+	--muted-foreground: 100 116 139; /* Slate 500 */
+
+	--accent: 241 245 249;
+	--accent-foreground: 15 23 42;
+
+	--destructive: 239 68 68; /* Red 500 */
+	--destructive-foreground: 248 250 252;
+
+	--border: 226 232 240; /* Slate 200 */
+	--input: 226 232 240;
+	--ring: 79 70 229;
+
+	--radius: 0.75rem;
 }
 
-[data-theme='dark'] {
-  /* Dark Mode */
-  --background: 2 6 23; /* Slate 950 */
-  --foreground: 248 250 252; /* Slate 50 */
-  
-  --card: 15 23 42; /* Slate 900 */
-  --card-foreground: 248 250 252;
-  
-  --popover: 15 23 42;
-  --popover-foreground: 248 250 252;
-  
-  --primary: 99 102 241; /* Indigo 500 */
-  --primary-foreground: 255 255 255;
-  
-  --secondary: 30 41 59; /* Slate 800 */
-  --secondary-foreground: 248 250 252;
-  
-  --muted: 30 41 59;
-  --muted-foreground: 148 163 184; /* Slate 400 */
-  
-  --accent: 30 41 59;
-  --accent-foreground: 248 250 252;
-  
-  --destructive: 127 29 29; /* Red 900 */
-  --destructive-foreground: 248 250 252;
-  
-  --border: 30 41 59; /* Slate 800 */
-  --input: 30 41 59;
-  --ring: 99 102 241;
+[data-theme="dark"] {
+	/* Dark Mode */
+	--background: 2 6 23; /* Slate 950 */
+	--foreground: 248 250 252; /* Slate 50 */
+
+	--card: 15 23 42; /* Slate 900 */
+	--card-foreground: 248 250 252;
+
+	--popover: 15 23 42;
+	--popover-foreground: 248 250 252;
+
+	--primary: 99 102 241; /* Indigo 500 */
+	--primary-foreground: 255 255 255;
+
+	--secondary: 30 41 59; /* Slate 800 */
+	--secondary-foreground: 248 250 252;
+
+	--muted: 30 41 59;
+	--muted-foreground: 148 163 184; /* Slate 400 */
+
+	--accent: 30 41 59;
+	--accent-foreground: 248 250 252;
+
+	--destructive: 127 29 29; /* Red 900 */
+	--destructive-foreground: 248 250 252;
+
+	--border: 30 41 59; /* Slate 800 */
+	--input: 30 41 59;
+	--ring: 99 102 241;
 }
 
 @theme {
@@ -99,9 +99,9 @@
 }
 
 body {
-  color: var(--color-foreground);
-  background: var(--color-background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	color: var(--color-foreground);
+	background: var(--color-background);
+	font-family: Arial, Helvetica, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }

@@ -1,42 +1,46 @@
 {
-  "name": "remittance-tracker",
-  "version": "1.0.0",
-  "author": "Mumukshu D.C",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "test": "jest",
-    "test:watch": "jest --watch"
-  },
-  "dependencies": {
-    "dexie": "^4.3.0",
-    "dexie-react-hooks": "^4.2.0",
-    "file-saver": "^2.0.5",
-    "lucide-react": "^0.574.0",
-    "next": "16.1.6",
-    "next-themes": "^0.4.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@types/file-saver": "^2.0.7",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "jest": "^30.2.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "tailwindcss": "^4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5"
-  }
+	"name": "remittance-tracker",
+	"version": "1.0.0",
+	"author": "Mumukshu D.C",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "biome lint .",
+		"format": "biome format --write .",
+		"type-check": "tsc --noEmit",
+		"test": "jest",
+		"gate": "biome check --write --skip-parse-errors . && npm run type-check && npm test"
+	},
+	"dependencies": {
+		"dexie": "^4.3.0",
+		"dexie-react-hooks": "^4.2.0",
+		"file-saver": "^2.0.5",
+		"lucide-react": "^0.574.0",
+		"next": "16.1.6",
+		"next-themes": "^0.4.6",
+		"react": "19.2.3",
+		"react-dom": "19.2.3",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.2",
+		"@tailwindcss/postcss": "^4",
+		"@testing-library/dom": "^10.4.1",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/react": "^16.3.2",
+		"@types/file-saver": "^2.0.7",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"eslint": "^9",
+		"eslint-config-next": "16.1.6",
+		"jest": "^30.2.0",
+		"jest-environment-jsdom": "^30.2.0",
+		"tailwindcss": "^4",
+		"ts-node": "^10.9.2",
+		"typescript": "^5"
+	}
 }
