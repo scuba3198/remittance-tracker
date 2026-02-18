@@ -54,7 +54,7 @@ export function TransactionList() {
 
                             <button
                                 onClick={() => handleDelete(tx.id)}
-                                className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-2 rounded-lg hover:bg-destructive/10 -mr-2 -mt-2 focus:opacity-100"
+                                className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-2 rounded-lg hover:bg-destructive/10 -mr-2 -mt-2 focus:opacity-100"
                                 title="Delete"
                                 aria-label="Delete transaction"
                             >
