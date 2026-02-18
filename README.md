@@ -3,6 +3,7 @@
 A beautiful, mobile-first web application to track money sent from the UK to Nepal. Built with privacy and simplicity in mind.
 
 ![Project Status](https://img.shields.io/badge/Status-Active-success?style=flat-square)
+[![Deployment](https://img.shields.io/badge/Deployment-Live-brightgreen?style=flat-square)](https://scuba3198.github.io/remittance-tracker/)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 
 ## ✨ Features
