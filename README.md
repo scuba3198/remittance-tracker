@@ -12,7 +12,34 @@ A beautiful, mobile-first web application to track money sent from the UK to Nep
 - **💱 Live Exchange Rates**: Automatically fetches the latest GBP to NPR exchange rates (with manual override).
 - **🌗 Dark Mode**: Beautifully designed interface with automatic light/dark theme switching.
 - **📱 Mobile First**: Optimized for seamless use on your phone.
-- **💾 Data Portability**: Export your transaction history to JSON and import it on any device.
+- [x] Data Portability: Export your transaction history to JSON and import it on any device.
+
+## 🏗️ Architecture Data Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Next.js UI
+    participant Domain as Domain Logic (Zod)
+    participant API as Currency API
+    participant DB as IndexedDB (Dexie)
+
+    User->>UI: Input GBP Amount
+    UI->>API: Fetch Live Rate (GBP/NPR)
+    API-->>UI: Return Rate (e.g. 175.50)
+    UI->>UI: Auto-calculate NPR
+    User->>UI: Click "Save Transaction"
+    UI->>Domain: Create Transaction Entity
+    alt Validation Fails
+        Domain-->>UI: Return Error (Invalid Data)
+        UI-->>User: Show Validation Message
+    else Validation Succeeds
+        Domain-->>UI: Return Valid Entity
+        UI->>DB: Persist Record
+        DB-->>UI: Success
+        UI-->>User: Update History List
+    end
+```
 
 ## 🛠️ Tech Stack
 
