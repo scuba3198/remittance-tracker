@@ -16,21 +16,24 @@ export enum Currency {
 }
 
 export type Money = {
-	amount: number; // Stored as number, but invariants enforced (non-negative, max 2 decimals)
+	minorUnits: bigint; // Stored as bigint to avoid float errors (e.g., pence, paisa)
 	currency: Currency;
 };
 
+const SCALE = 2n;
+const FACTOR = 100n; // 10^SCALE
+
 export const Money = {
-	of: (amount: number, currency: Currency): Result<Money, DomainError> => {
-		if (amount < 0) {
-			return Result.err({
-				type: "ValidationError",
-				field: "amount",
-				message: "Amount must be non-negative",
-			});
-		}
-		// Check scale (max 2 decimal places) - tolerating small float errors
-		const parts = amount.toString().split(".");
+	of: (
+		amount: number | string,
+		currency: Currency,
+	): Result<Money, DomainError> => {
+		const strAmount =
+			typeof amount === "number"
+				? amount.toFixed(10).replace(/\.?0+$/, "")
+				: amount;
+		const parts = strAmount.split(".");
+
 		if (parts.length > 1 && parts[1].length > 2) {
 			return Result.err({
 				type: "ValidationError",
@@ -39,23 +42,85 @@ export const Money = {
 			});
 		}
 
-		return Result.ok({ amount, currency });
+		const major = parts[0] || "0";
+		const minor = (parts[1] || "").padEnd(2, "0");
+
+		try {
+			const majorVal = BigInt(major);
+			const minorVal = BigInt(minor);
+
+			if (majorVal < 0n || (majorVal === 0n && strAmount.startsWith("-"))) {
+				return Result.err({
+					type: "ValidationError",
+					field: "amount",
+					message: "Amount must be non-negative",
+				});
+			}
+
+			return Result.ok({
+				minorUnits: majorVal * FACTOR + minorVal,
+				currency,
+			});
+		} catch {
+			return Result.err({
+				type: "ValidationError",
+				field: "amount",
+				message: "Invalid numeric format",
+			});
+		}
+	},
+
+	toDecimalString: (money: Money): string => {
+		const major = money.minorUnits / FACTOR;
+		const minor = money.minorUnits % FACTOR;
+		return `${major}.${minor.toString().padStart(2, "0")}`;
+	},
+
+	multiplyByRate: (
+		money: Money,
+		rate: ExchangeRate,
+		targetCurrency: Currency,
+	): Money => {
+		// (minorUnits * scaledValue) / 10^6 with half-up rounding
+		const scaledConversion = money.minorUnits * rate.scaledValue;
+		const rateScaleFactor = 1000000n;
+
+		// To round half-up: add half of the divisor before floor division
+		const rounded = (scaledConversion + rateScaleFactor / 2n) / rateScaleFactor;
+
+		return {
+			minorUnits: rounded,
+			currency: targetCurrency,
+		};
 	},
 };
 
 // Exchange Rate
-export type ExchangeRate = number; // Opaque-ish
+export type ExchangeRate = {
+	scaledValue: bigint; // Fixed scale of 6 (e.g. 175.50 -> 175,500,000)
+};
 
 export const ExchangeRate = {
-	of: (value: number): Result<ExchangeRate, DomainError> => {
-		if (value <= 0) {
+	of: (value: number | string): Result<ExchangeRate, DomainError> => {
+		const num = typeof value === "string" ? parseFloat(value) : value;
+		if (num <= 0) {
 			return Result.err({
 				type: "ValidationError",
 				field: "rate",
 				message: "Exchange rate must be positive",
 			});
 		}
-		return Result.ok(value);
+
+		// Convert to string and handle up to 6 decimals for the internal scale
+		const fixed = num.toFixed(6);
+		const [major, minor] = fixed.split(".");
+		const scaledValue = BigInt(major) * 1000000n + BigInt(minor);
+
+		return Result.ok({ scaledValue });
+	},
+
+	toNumber: (rate: ExchangeRate): number => {
+		return Number(rate.scaledValue) / 1000000;
 	},
 };
 

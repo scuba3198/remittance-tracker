@@ -7,17 +7,17 @@ import {
 
 describe("Domain Primitives", () => {
 	describe("Money", () => {
-		it("should create valid Money", () => {
-			const result = Money.of(100, Currency.GBP);
+		it("should create valid Money from string", () => {
+			const result = Money.of("100.00", Currency.GBP);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.value.amount).toBe(100);
+				expect(result.value.minorUnits).toBe(10000n);
 				expect(result.value.currency).toBe(Currency.GBP);
 			}
 		});
 
 		it("should reject negative amount", () => {
-			const result = Money.of(-50, Currency.GBP);
+			const result = Money.of("-50", Currency.GBP);
 			expect(result.success).toBe(false);
 			if (!result.success) {
 				expect(result.error.type).toBe("ValidationError");
@@ -26,11 +26,11 @@ describe("Domain Primitives", () => {
 	});
 
 	describe("ExchangeRate", () => {
-		it("should create valid ExchangeRate", () => {
+		it("should create valid ExchangeRate with 6-decimal scaling", () => {
 			const result = ExchangeRate.of(1.5);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.value).toBe(1.5);
+				expect(result.value.scaledValue).toBe(1500000n);
 			}
 		});
 

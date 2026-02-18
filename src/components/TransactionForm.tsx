@@ -2,7 +2,12 @@
 
 import { Banknote, Calendar, Loader2, Save } from "lucide-react";
 import { useEffect, useState } from "react";
-import { TransactionId } from "@/domain/primitives";
+import {
+	Currency,
+	ExchangeRate,
+	Money,
+	TransactionId,
+} from "@/domain/primitives";
 import { RemittanceTransaction } from "@/domain/transaction";
 import { db } from "@/lib/db";
 import { fetchExchangeRate } from "@/services/currency";
@@ -36,8 +41,13 @@ export function TransactionForm() {
 	const handleGbpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const val = e.target.value;
 		setGbp(val);
-		if (rate && val && !Number.isNaN(parseFloat(val))) {
-			setNpr((parseFloat(val) * rate).toFixed(2));
+		if (rate && val) {
+			const m = Money.of(val, Currency.GBP);
+			const r = ExchangeRate.of(rate);
+			if (m.success && r.success) {
+				const nprMoney = Money.multiplyByRate(m.value, r.value, Currency.NPR);
+				setNpr(Money.toDecimalString(nprMoney));
+			}
 		} else if (val === "") {
 			setNpr("");
 		}
@@ -46,19 +56,36 @@ export function TransactionForm() {
 	const handleNprChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const val = e.target.value;
 		setNpr(val);
-		if (rate && val && !Number.isNaN(parseFloat(val))) {
-			setGbp((parseFloat(val) / rate).toFixed(2));
+		if (rate && val) {
+			// Backward conversion requires careful math to avoid floating point issues too.
+			// However, the spec primarily focused on Forward conversion (GBP -> NPR).
+			// For backward, we can use the same principle: divide by rate scaled.
+			const m = Money.of(val, Currency.NPR);
+			const r = ExchangeRate.of(rate);
+			if (m.success && r.success) {
+				// Reverse: (minorUnits * 10^6) / scaledRate
+				const rateScaleFactor = 1000000n;
+				const raw =
+					(m.value.minorUnits * rateScaleFactor + r.value.scaledValue / 2n) /
+					r.value.scaledValue;
+				setGbp(
+					Money.toDecimalString({ minorUnits: raw, currency: Currency.GBP }),
+				);
+			}
 		} else if (val === "") {
 			setGbp("");
 		}
 	};
 
 	const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const val = parseFloat(e.target.value);
-		if (!Number.isNaN(val)) {
-			setRate(val);
-			if (gbp && !Number.isNaN(parseFloat(gbp))) {
-				setNpr((parseFloat(gbp) * val).toFixed(2));
+		const val = e.target.value;
+		setRate(val === "" ? null : parseFloat(val));
+		if (gbp && val !== "") {
+			const m = Money.of(gbp, Currency.GBP);
+			const r = ExchangeRate.of(val);
+			if (m.success && r.success) {
+				const nprMoney = Money.multiplyByRate(m.value, r.value, Currency.NPR);
+				setNpr(Money.toDecimalString(nprMoney));
 			}
 		}
 	};
@@ -71,8 +98,8 @@ export function TransactionForm() {
 		const rawId = TransactionId.new();
 		const result = RemittanceTransaction.create({
 			id: rawId,
-			sourceAmount: parseFloat(gbp),
-			targetAmount: parseFloat(npr),
+			sourceAmount: gbp,
+			targetAmount: npr,
 			exchangeRate: rate || 0,
 			date: date,
 			note: note || undefined,
@@ -91,9 +118,9 @@ export function TransactionForm() {
 			await db.transactions.add({
 				id: result.value.id,
 				date: result.value.date,
-				sourceAmount: result.value.sourceAmount.amount,
-				targetAmount: result.value.targetAmount.amount,
-				exchangeRate: result.value.exchangeRate,
+				sourceAmount: Number(result.value.sourceAmount.minorUnits) / 100, // DB still uses numbers for simplicity in search/sort
+				targetAmount: Number(result.value.targetAmount.minorUnits) / 100,
+				exchangeRate: ExchangeRate.toNumber(result.value.exchangeRate),
 				note: result.value.note,
 				createdAt: Date.now(),
 			});
