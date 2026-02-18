@@ -6,7 +6,7 @@ import { Send } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background pb-20 transition-colors duration-300">
+    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-md sticky top-0 z-10 border-b border-border shadow-sm">
         <div className="max-w-xl mx-auto px-4 py-4 flex justify-between items-center">
