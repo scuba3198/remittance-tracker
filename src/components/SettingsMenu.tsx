@@ -63,8 +63,8 @@ export function SettingsMenu() {
             </button>
 
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-card text-card-foreground rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-in zoom-in-95 duration-200 border border-border">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200 h-[100dvh]">
+                    <div className="bg-card text-card-foreground rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-in zoom-in-95 duration-200 border border-border max-h-[90dvh] overflow-y-auto">
                         <button
                             onClick={() => setIsOpen(false)}
                             className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition rounded-full p-1 hover:bg-secondary"
@@ -118,8 +118,8 @@ export function SettingsMenu() {
 
                                 {importStatus && (
                                     <div className={`mt-4 text-xs p-3 rounded-lg border flex items-start gap-2 ${importStatus.type === 'success'
-                                            ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
-                                            : 'bg-destructive/10 border-destructive/20 text-destructive'
+                                        ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
+                                        : 'bg-destructive/10 border-destructive/20 text-destructive'
                                         }`}>
                                         {importStatus.type === 'success' ? <CheckCircle className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
                                         <span className="break-words">{importStatus.msg}</span>
