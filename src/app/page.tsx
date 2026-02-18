@@ -1,32 +1,41 @@
 import { TransactionForm } from '@/components/TransactionForm';
 import { TransactionList } from '@/components/TransactionList';
 import { SettingsMenu } from '@/components/SettingsMenu';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Send } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-background pb-20 transition-colors duration-300">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <Send className="w-5 h-5 text-white" />
+      <header className="bg-card/80 backdrop-blur-md sticky top-0 z-10 border-b border-border shadow-sm">
+        <div className="max-w-xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-xl ring-1 ring-primary/20">
+              <Send className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="text-xl font-bold text-gray-800">RemitTracker</h1>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">RemitTracker</h1>
           </div>
-          <SettingsMenu />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <SettingsMenu />
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-md mx-auto px-4 py-6">
-        <TransactionForm />
-        <TransactionList />
+      <main className="max-w-xl mx-auto px-4 py-8 space-y-8">
+        <section>
+          <TransactionForm />
+        </section>
+
+        <section>
+          <TransactionList />
+        </section>
       </main>
 
-      <footer className="text-center text-gray-400 text-xs py-8">
-        &copy; {new Date().getFullYear()} RemitTracker
+      <footer className="text-center text-muted-foreground text-xs py-8 border-t border-border mt-8">
+        <p>&copy; {new Date().getFullYear()} RemitTracker • Local Storage • Secure</p>
       </footer>
     </div>
   );

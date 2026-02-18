@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💷 Remittance Tracker (GBP ➔ NPR)
 
-## Getting Started
+A beautiful, mobile-first web application to track money sent from the UK to Nepal. Built with privacy and simplicity in mind.
 
-First, run the development server:
+![Project Status](https://img.shields.io/badge/Status-Active-success?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+
+## ✨ Features
+
+- **🔒 Private & Secure**: All data is stored locally in your browser (IndexedDB). No external servers see your financial data.
+- **💱 Live Exchange Rates**: Automatically fetches the latest GBP to NPR exchange rates (with manual override).
+- **🌗 Dark Mode**: Beautifully designed interface with automatic light/dark theme switching.
+- **📱 Mobile First**: Optimized for seamless use on your phone.
+- **💾 Data Portability**: Export your transaction history to JSON and import it on any device.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + CSS Variables for Theming
+- **Database**: [Dexie.js](https://dexie.org/) (IndexedDB Wrapper)
+- **Validation**: [Zod](https://zod.dev/) (Domain-Driven Design)
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ installed.
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/scuba3198/remittance-tracker.git
+    cd remittance-tracker
+    ```
+
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
+
+4.  Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🧪 Running Tests
+
+We use **Jest** for unit testing our domain logic to ensure financial accuracy.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📦 Data Backup & Restore
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Since data is stored locally in your browser, it won't automatically sync across devices. To move your data:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1.  Click the **Settings (Gear Icon)** in the top right.
+2.  Select **"Export Data"** to download a backup file (`.json`).
+3.  On your new device, go to **Settings > Import Data** and select the backup file.
 
-## Learn More
+## 👤 Author
 
-To learn more about Next.js, take a look at the following resources:
+**Mumukshu D.C**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Built with ❤️ for the Nepali Diaspora in the UK.*

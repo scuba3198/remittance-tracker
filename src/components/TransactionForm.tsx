@@ -5,7 +5,8 @@ import { db } from '@/lib/db';
 import { fetchExchangeRate } from '@/services/currency';
 import { RemittanceTransaction } from '@/domain/transaction';
 import { TransactionId } from '@/domain/primitives';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, Calendar, Banknote } from 'lucide-react';
+
 
 export function TransactionForm() {
     const [rate, setRate] = useState<number | null>(null);
@@ -17,7 +18,6 @@ export function TransactionForm() {
     const [error, setError] = useState<string | null>(null);
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-    // Fetch rate on mount
     useEffect(() => {
         const loadRate = async () => {
             setLoadingRate(true);
@@ -32,7 +32,6 @@ export function TransactionForm() {
         loadRate();
     }, []);
 
-    // Recalculate NPR when GBP changes
     const handleGbpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setGbp(val);
@@ -43,7 +42,6 @@ export function TransactionForm() {
         }
     };
 
-    // Recalculate GBP when NPR changes (optional, but good UX)
     const handleNprChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setNpr(val);
@@ -58,7 +56,6 @@ export function TransactionForm() {
         const val = parseFloat(e.target.value);
         if (!isNaN(val)) {
             setRate(val);
-            // Update NPR based on new rate if GBP exists
             if (gbp && !isNaN(parseFloat(gbp))) {
                 setNpr((parseFloat(gbp) * val).toFixed(2));
             }
@@ -70,7 +67,6 @@ export function TransactionForm() {
         setError(null);
         setSuccessMsg(null);
 
-        // Create Domain Entity to validate
         const rawId = TransactionId.new();
         const result = RemittanceTransaction.create({
             id: rawId,
@@ -90,7 +86,6 @@ export function TransactionForm() {
             return;
         }
 
-        // Persist to Dexie
         try {
             await db.transactions.add({
                 id: result.value.id,
@@ -98,15 +93,15 @@ export function TransactionForm() {
                 sourceAmount: result.value.sourceAmount.amount,
                 targetAmount: result.value.targetAmount.amount,
                 exchangeRate: result.value.exchangeRate,
-                note: result.value.note, // Optional
+                note: result.value.note,
                 createdAt: Date.now()
             });
 
-            setSuccessMsg('Transaction saved!');
-            // Reset form (keep rate and date)
+            setSuccessMsg('Transaction saved successfully!');
             setGbp('');
             setNpr('');
             setNote('');
+            setTimeout(() => setSuccessMsg(null), 3000);
         } catch (e) {
             setError('Failed to save to database.');
             console.error(e);
@@ -114,77 +109,59 @@ export function TransactionForm() {
     };
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <Save className="w-5 h-5 text-indigo-600" />
-                New Transaction
-            </h2>
+        <div className="bg-card text-card-foreground p-6 rounded-2xl shadow-lg border border-border/50">
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                    <Banknote className="w-5 h-5 text-primary" />
+                    New Transaction
+                </h2>
+                {rate && (
+                    <div className={`text-xs px-2 py-1 rounded-full font-medium ${loadingRate ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary'}`}>
+                        1 GBP = {rate.toFixed(2)} NPR
+                    </div>
+                )}
+            </div>
 
             {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">
+                <div className="bg-destructive/10 text-destructive p-3 rounded-lg mb-4 text-sm font-medium border border-destructive/20 animate-in fade-in slide-in-from-top-2">
                     {error}
                 </div>
             )}
 
             {successMsg && (
-                <div className="bg-green-50 text-green-600 p-3 rounded-lg mb-4 text-sm">
+                <div className="bg-green-500/10 text-green-600 dark:text-green-400 p-3 rounded-lg mb-4 text-sm font-medium border border-green-500/20 animate-in fade-in slide-in-from-top-2">
                     {successMsg}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Exchange Rate */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                        Exchange Rate (1 GBP = ? NPR)
-                    </label>
-                    <div className="relative">
-                        <input
-                            type="number"
-                            step="0.01"
-                            value={rate || ''}
-                            onChange={handleRateChange}
-                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                            placeholder="Fetching..."
-                            required
-                        />
-                        {loadingRate && (
-                            <div className="absolute right-3 top-3">
-                                <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
-                            </div>
-                        )}
-                    </div>
-                </div>
-
+            <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
-                    {/* GBP Amount */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">
-                            Amount (GBP)
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider pl-1">
+                            GBP ( £ )
                         </label>
                         <input
                             type="number"
                             step="0.01"
                             value={gbp}
                             onChange={handleGbpChange}
-                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                            className="w-full p-3 bg-secondary/50 border border-transparent focus:border-primary/50 text-foreground rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all font-mono text-lg"
                             placeholder="0.00"
                             required
                             min="0"
                         />
                     </div>
 
-                    {/* NPR Amount */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">
-                            Amount (NPR)
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider pl-1">
+                            NPR ( Rs )
                         </label>
                         <input
                             type="number"
                             step="0.01"
                             value={npr}
                             onChange={handleNprChange}
-                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition"
+                            className="w-full p-3 bg-secondary/50 border border-transparent focus:border-primary/50 text-foreground rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all font-mono text-lg"
                             placeholder="0.00"
                             required
                             min="0"
@@ -192,31 +169,56 @@ export function TransactionForm() {
                     </div>
                 </div>
 
-                {/* Date */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                        Date
-                    </label>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        max={new Date().toISOString().split('T')[0]} // Prevent future
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                        required
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider pl-1">
+                            Exchange Rate
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={rate || ''}
+                                onChange={handleRateChange}
+                                className="w-full p-3 bg-secondary/30 border border-border text-foreground rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm"
+                                placeholder="Rate"
+                                required
+                            />
+                            {loadingRate && (
+                                <div className="absolute right-3 top-3">
+                                    <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider pl-1">
+                            Date
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                max={new Date().toISOString().split('T')[0]}
+                                className="w-full p-3 bg-secondary/30 border border-border text-foreground rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm appearance-none"
+                                required
+                            />
+                            <Calendar className="absolute right-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Note */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider pl-1">
                         Note (Optional)
                     </label>
                     <textarea
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
-                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
-                        placeholder="e.g. Sent for festival..."
+                        className="w-full p-3 bg-secondary/30 border border-border text-foreground rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm resize-none"
+                        placeholder="e.g. Festival gift..."
                         rows={2}
                         maxLength={200}
                     />
@@ -224,8 +226,9 @@ export function TransactionForm() {
 
                 <button
                     type="submit"
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition shadow-md hover:shadow-lg active:scale-95 transform duration-150"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-[0.98] flex items-center justify-center gap-2"
                 >
+                    <Save className="w-4 h-4" />
                     Save Transaction
                 </button>
             </form>

@@ -2,12 +2,12 @@
 
 import { useState, useRef } from 'react';
 import { exportDatabase, importDatabase } from '@/lib/db';
-import { Download, Upload, Settings, X, FileJson } from 'lucide-react';
+import { Download, Upload, Settings, X, FileJson, CheckCircle, AlertCircle } from 'lucide-react';
 import { saveAs } from 'file-saver';
 
 export function SettingsMenu() {
     const [isOpen, setIsOpen] = useState(false);
-    const [importStatus, setImportStatus] = useState<string | null>(null);
+    const [importStatus, setImportStatus] = useState<{ msg: string, type: 'success' | 'error' } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleExport = async () => {
@@ -33,16 +33,21 @@ export function SettingsMenu() {
             const text = await file.text();
             const result = await importDatabase(text);
             if (result.errors.length > 0) {
-                setImportStatus(`Imported ${result.added} new, updated ${result.updated}. Errors: ${result.errors.length}`);
+                setImportStatus({
+                    msg: `Imported ${result.added} new, updated ${result.updated}. ${result.errors.length} errors.`,
+                    type: 'error'
+                });
                 console.warn('Import errors:', result.errors);
             } else {
-                setImportStatus(`Success! Added ${result.added}, Updated ${result.updated}.`);
+                setImportStatus({
+                    msg: `Success! Added ${result.added}, Updated ${result.updated} records.`,
+                    type: 'success'
+                });
             }
-            // Reset input
             if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (err) {
             console.error(err);
-            setImportStatus('Failed to read file.');
+            setImportStatus({ msg: 'Failed to read file.', type: 'error' });
         }
     };
 
@@ -50,48 +55,51 @@ export function SettingsMenu() {
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="p-2 text-gray-600 hover:text-indigo-600 transition bg-white rounded-full shadow-sm"
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition rounded-full"
                 title="Settings & Backup"
+                aria-label="Settings"
             >
                 <Settings className="w-5 h-5" />
             </button>
 
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-card text-card-foreground rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-in zoom-in-95 duration-200 border border-border">
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition"
+                            className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition rounded-full p-1 hover:bg-secondary"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <Settings className="w-5 h-5 text-indigo-600" />
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            <Settings className="w-5 h-5 text-primary" />
                             Settings & Backup
                         </h2>
 
-                        <div className="space-y-6">
-                            <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-                                <h3 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
+                        <div className="space-y-4">
+                            {/* Export */}
+                            <div className="p-4 bg-secondary/30 rounded-xl border border-border">
+                                <h3 className="font-semibold text-sm mb-2 flex items-center gap-2 text-foreground">
                                     <Download className="w-4 h-4" /> Export Data
                                 </h3>
-                                <p className="text-sm text-indigo-700 mb-3">
+                                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
                                     Download your transaction history as a JSON file to back it up or move it to another device.
                                 </p>
                                 <button
                                     onClick={handleExport}
-                                    className="w-full bg-white border border-indigo-200 text-indigo-700 font-medium py-2 px-4 rounded-lg hover:bg-indigo-100 transition flex items-center justify-center gap-2"
+                                    className="w-full bg-background border border-border hover:bg-secondary/50 text-foreground font-medium py-2.5 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2 shadow-sm"
                                 >
                                     <FileJson className="w-4 h-4" /> Download Backup
                                 </button>
                             </div>
 
-                            <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                <h3 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                            {/* Import */}
+                            <div className="p-4 bg-secondary/30 rounded-xl border border-border">
+                                <h3 className="font-semibold text-sm mb-2 flex items-center gap-2 text-foreground">
                                     <Upload className="w-4 h-4" /> Import Data
                                 </h3>
-                                <p className="text-sm text-purple-700 mb-3">
+                                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
                                     Restore your history from a backup file. Existing transactions will be updated.
                                 </p>
                                 <input
@@ -103,19 +111,24 @@ export function SettingsMenu() {
                                 />
                                 <button
                                     onClick={handleImportClick}
-                                    className="w-full bg-white border border-purple-200 text-purple-700 font-medium py-2 px-4 rounded-lg hover:bg-purple-100 transition flex items-center justify-center gap-2"
+                                    className="w-full bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary font-medium py-2.5 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2"
                                 >
                                     <Upload className="w-4 h-4" /> Select Backup File
                                 </button>
+
                                 {importStatus && (
-                                    <div className="mt-3 text-xs font-mono bg-white p-2 rounded border border-purple-200 text-purple-800 break-words">
-                                        {importStatus}
+                                    <div className={`mt-4 text-xs p-3 rounded-lg border flex items-start gap-2 ${importStatus.type === 'success'
+                                            ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
+                                            : 'bg-destructive/10 border-destructive/20 text-destructive'
+                                        }`}>
+                                        {importStatus.type === 'success' ? <CheckCircle className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+                                        <span className="break-words">{importStatus.msg}</span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        <div className="mt-6 text-center text-xs text-gray-400">
+                        <div className="mt-8 text-center text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
                             Remittance Tracker v1.0 • Client-side Storage
                         </div>
                     </div>
