@@ -34,7 +34,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="text-center text-muted-foreground text-xs py-4 border-t border-border mt-4">
+      <footer className="text-center text-muted-foreground text-[10px] py-4 border-t border-border mt-auto">
         <p>Made with &lt;3 by Mumukshu D.C</p>
       </footer>
     </div>
