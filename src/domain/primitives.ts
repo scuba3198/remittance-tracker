@@ -32,12 +32,11 @@ export const Money = {
         // Check scale (max 2 decimal places) - tolerating small float errors
         const parts = amount.toString().split('.');
         if (parts.length > 1 && parts[1].length > 2) {
-            // Allow potentially more precision but warn? Or strictly reject?
-            // Spec says Precision 2. Let's strictly reject for now or round? 
-            // Better to strictly reject explicit input, but UI might handle rounding.
-            // For a domain primitive, we expect clean data.
-            // However, float math might produce 10.000000001. 
-            // Let's allow loose check for check, or just rely on non-negative for now.
+            return Result.err({
+                type: 'ValidationError',
+                field: 'amount',
+                message: 'Amount must have at most 2 decimal places',
+            });
         }
 
         return Result.ok({ amount, currency });
