@@ -1,10 +1,10 @@
-'use client';
-
+import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/lib/db';
-import { Trash2, ArrowRight, History } from 'lucide-react';
+import { Trash2, ArrowRight, History, X, Check } from 'lucide-react';
 
 export function TransactionList() {
+    const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
     const transactions = useLiveQuery(
         () => db.transactions.orderBy('date').reverse().toArray()
     );
@@ -26,10 +26,9 @@ export function TransactionList() {
         );
     }
 
-    const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to delete this transaction?')) {
-            db.transactions.delete(id);
-        }
+    const handleDelete = async (id: string) => {
+        await db.transactions.delete(id);
+        setConfirmDelete(null);
     };
 
     return (
@@ -37,7 +36,28 @@ export function TransactionList() {
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-1">Recent History</h3>
             <div className="space-y-3">
                 {transactions.map((tx) => (
-                    <div key={tx.id} className="group bg-card hover:bg-secondary/40 p-5 rounded-2xl shadow-sm border border-border/60 hover:border-primary/20 transition-all duration-200">
+                    <div key={tx.id} className="group relative bg-card hover:bg-secondary/40 p-5 rounded-2xl shadow-sm border border-border/60 hover:border-primary/20 transition-all duration-200 overflow-hidden">
+                        {/* Custom Confirmation Overlay */}
+                        {confirmDelete === tx.id && (
+                            <div className="absolute inset-0 bg-destructive/10 backdrop-blur-[2px] z-10 flex items-center justify-center gap-4 animate-in fade-in zoom-in-95 duration-200">
+                                <span className="text-xs font-bold text-destructive uppercase tracking-widest">Delete?</span>
+                                <button
+                                    onClick={() => setConfirmDelete(null)}
+                                    className="bg-background text-foreground p-2 rounded-full shadow-lg border border-border hover:bg-secondary transition-transform active:scale-90"
+                                    aria-label="Cancel"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(tx.id)}
+                                    className="bg-destructive text-destructive-foreground p-2 rounded-full shadow-lg hover:bg-destructive/90 transition-transform active:scale-90"
+                                    aria-label="Confirm Delete"
+                                >
+                                    <Check className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
+
                         <div className="flex justify-between items-start">
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
@@ -53,7 +73,7 @@ export function TransactionList() {
                             </div>
 
                             <button
-                                onClick={() => handleDelete(tx.id)}
+                                onClick={() => setConfirmDelete(tx.id)}
                                 className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-2 rounded-lg hover:bg-destructive/10 -mr-2 -mt-2 focus:opacity-100"
                                 title="Delete"
                                 aria-label="Delete transaction"
