@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Remittance Tracker",
   description: "Track your GBP to NPR remittances securely.",
-  manifest: "/manifest.json",
+  manifest: "/remittance-tracker/manifest.json",
 };
 
 export default function RootLayout({
