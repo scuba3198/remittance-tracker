@@ -35,7 +35,7 @@ export default function Home() {
       </main>
 
       <footer className="text-center text-muted-foreground text-xs py-8 border-t border-border mt-8">
-        <p>&copy; {new Date().getFullYear()} RemitTracker • Local Storage • Secure</p>
+        <p>Made with &lt;3 by Mumukshu D.C</p>
       </footer>
     </div>
   );
